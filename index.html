@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Smart Study Planner</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <h1>Smart Study Planner</h1>
+        <nav class="main-nav" role="navigation">
+          <button class="nav-btn active">Dashboard</button>
+          <button class="nav-btn">Subjects</button>
+          <button class="nav-btn">Schedule</button>
+          <button class="nav-btn">Tasks</button>
+          <button class="nav-btn">Analytics</button>
+          <button class="nav-btn">Settings</button>
+        </nav>
+      </header>
+
+      <main class="app-main">
+        <section id="dashboard" class="section active">
+          <h2>Dashboard</h2>
+          <div class="cards">
+            <div class="card">
+              <h3 id="total-subjects">0</h3>
+              <p>Subjects</p>
+            </div>
+            <div class="card">
+              <h3 id="pending-tasks">0</h3>
+              <p>Pending Tasks</p>
+            </div>
+            <div class="card">
+              <h3 id="today-sessions">0</h3>
+              <p>Today's Sessions</p>
+            </div>
+          </div>
+          <div class="panel">
+            <h4>Upcoming Deadlines</h4>
+            <ul id="upcoming"></ul>
+          </div>
+        </section>
+
+        <section id="subjects" class="section">
+          <h2>Subjects</h2>
+          <form id="subject-form" class="inline-form">
+            <input id="subject-name" placeholder="Subject name" required />
+            <select id="subject-priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+            <button type="submit">Add Subject</button>
+          </form>
+          <ul id="subject-list" class="list"></ul>
+        </section>
+
+        <section id="schedule" class="section">
+          <h2>Schedule Planner</h2>
+          <form id="session-form" class="inline-form">
+            <select id="session-subject"></select>
+            <select id="session-day">
+              <option>Mon</option><option>Tue</option><option>Wed</option>
+              <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+            </select>
+            <input id="session-start" type="time" required />
+            <input id="session-end" type="time" required />
+            <button type="submit">Add Session</button>
+          </form>
+          <div id="week-schedule" class="week-grid"></div>
+        </section>
+
+        <section id="tasks" class="section">
+          <h2>Tasks & Deadlines</h2>
+          <form id="task-form" class="inline-form">
+            <input id="task-title" placeholder="Task title" required />
+            <select id="task-subject"></select>
+            <input id="task-deadline" type="date" required />
+            <button type="submit">Add Task</button>
+          </form>
+          <ul id="task-list" class="list"></ul>
+        </section>
+
+        <section id="analytics" class="section">
+          <h2>Progress Analytics</h2>
+          <canvas id="chart" width="600" height="200"></canvas>
+          <p class="muted">Simple counts showing completed vs pending tasks.</p>
+        </section>
+
+        <section id="settings" class="section">
+          <h2>Settings</h2>
+          <div class="settings-row">
+            <label>
+              <input id="theme-toggle" type="checkbox" /> Dark theme
+            </label>
+            <button id="export-btn">Export Data</button>
+            <input id="import-file" type="file" accept="application/json" />
+            <button id="reset-data">Reset All Data</button>
+          </div>
+          <p class="muted">Data is stored locally in your browser using localStorage.</p>
+        </section>
+      </main>
+
+      <footer class="app-footer">LocalStorage • No frameworks</footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
