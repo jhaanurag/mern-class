@@ -22,7 +22,7 @@ body::before {
   position: fixed;
   inset: 0;
   background: url("./image.png") center / cover no-repeat;
-  filter: blur(4px) saturate(1.15);
+  filter: blur(0px) saturate(1.25);
   transform: scale(1.05);
   z-index: -2;
 }
@@ -239,6 +239,31 @@ body::after {
   font-size: 13px;
 }
 
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.chart-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #d9e8ff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 16px rgba(54, 90, 146, 0.1);
+}
+
+.chart-card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #1a3258;
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  height: 260px !important;
+}
+
 .muted { color: #5b6675; font-size: 13px; }
 
 .settings-row {
@@ -285,7 +310,8 @@ body.dark .week-grid .day,
 body.dark .inline-form,
 body.dark .settings-row,
 body.dark .app-footer,
-body.dark .card {
+body.dark .card,
+body.dark .chart-card {
   background: rgba(9, 22, 42, 0.82);
   border-color: rgba(164, 190, 255, 0.2);
   color: #e6eef8;
@@ -327,4 +353,6 @@ body.dark .list li button {
   }
   .cards { flex-direction: column; }
   .week-grid { grid-template-columns: repeat(2, 1fr); }
+  .analytics-grid { grid-template-columns: 1fr; }
+  .chart-card canvas { height: 240px !important; }
 }
