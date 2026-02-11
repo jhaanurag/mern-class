@@ -248,7 +248,7 @@ function renderSubjects() {
     editBtn.addEventListener('click', function () {
       const nextName = prompt('Edit subject name', subject.name);
       if (!nextName) return;
-
+ 
       const nextPriority = prompt('Priority (low/medium/high)', subject.priority) || subject.priority;
 
       subject.name = nextName.trim();
