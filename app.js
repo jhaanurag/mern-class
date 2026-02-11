@@ -443,6 +443,7 @@ function renderTasks() {
 // draw a simple bar chart on canvas
 function renderChart() {
   const canvas = getById('#chart');
+  if (!canvas) return;
   // need the 2d context to draw stuff, cant draw on just the element
   const context = canvas.getContext('2d');
 
@@ -492,6 +493,71 @@ function renderChart() {
   context.font = '14px sans-serif';
   context.fillText('Done (' + doneCount + ')', firstX + 18, canvas.height - 8);
   context.fillText('Pending (' + pendingCount + ')', secondX + 4, canvas.height - 8);
+
+  renderSubjectChart();
+}
+
+// second chart: plain-canvas bars of how many tasks each subject has
+function renderSubjectChart() {
+  const canvas = getById('#subject-chart');
+  if (!canvas) return;
+
+  const context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  const subjectCounts = [];
+  for (let i = 0; i < subjects.length; i += 1) {
+    let count = 0;
+    for (let j = 0; j < tasks.length; j += 1) {
+      if (idsMatch(tasks[j].subjectId, subjects[i].id)) {
+        count += 1;
+      }
+    }
+    subjectCounts.push({ name: subjects[i].name, count: count });
+  }
+
+  if (subjectCounts.length === 0) {
+    context.fillStyle = '#6b7280';
+    context.font = '15px sans-serif';
+    context.fillText('No subjects yet.', 20, 40);
+    return;
+  }
+
+  let maxCount = 1;
+  for (let i = 0; i < subjectCounts.length; i += 1) {
+    if (subjectCounts[i].count > maxCount) {
+      maxCount = subjectCounts[i].count;
+    }
+  }
+
+  const left = 30;
+  const right = canvas.width - 20;
+  const top = 20;
+  const bottom = canvas.height - 45;
+  const chartWidth = right - left;
+  const chartHeight = bottom - top;
+  const slotWidth = chartWidth / subjectCounts.length;
+  const barWidth = Math.max(20, Math.min(56, slotWidth * 0.6));
+
+  for (let i = 0; i < subjectCounts.length; i += 1) {
+    const item = subjectCounts[i];
+    const barHeight = Math.round((item.count / maxCount) * chartHeight);
+    const barX = left + i * slotWidth + Math.round((slotWidth - barWidth) / 2);
+    const barY = bottom - barHeight;
+
+    context.fillStyle = '#14b8a6';
+    context.fillRect(barX, barY, barWidth, barHeight);
+
+    context.fillStyle = '#0f172a';
+    context.font = '12px sans-serif';
+    context.fillText(String(item.count), barX + Math.round(barWidth / 2) - 4, barY - 6);
+
+    let shortName = item.name;
+    if (shortName.length > 8) {
+      shortName = shortName.slice(0, 8) + '…';
+    }
+    context.fillText(shortName, barX - 2, canvas.height - 18);
+  }
 }
 
 // attach listeners to all the forms
@@ -727,4 +793,3 @@ document.addEventListener('DOMContentLoaded', function () {
   renderDashboard();
   renderChart();
 });
-

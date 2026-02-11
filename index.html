@@ -85,8 +85,18 @@
 
         <section id="analytics" class="section">
           <h2>Progress Analytics</h2>
-          <canvas id="chart" width="600" height="200"></canvas>
-          <p class="muted">Simple counts showing completed vs pending tasks.</p>
+          <div class="analytics-grid">
+            <div class="chart-card">
+              <h3>Done vs Pending</h3>
+              <canvas id="chart" width="600" height="260"></canvas>
+              <p class="muted">Simple counts showing completed vs pending tasks.</p>
+            </div>
+            <div class="chart-card">
+              <h3>Tasks by Subject</h3>
+              <canvas id="subject-chart" width="600" height="260"></canvas>
+              <p class="muted">Task totals grouped by subject.</p>
+            </div>
+          </div>
         </section>
 
         <section id="settings" class="section">
