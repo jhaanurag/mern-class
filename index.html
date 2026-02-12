@@ -10,7 +10,7 @@
     <div class="app">
       <header class="app-header">
         <h1>Smart Study Planner</h1>
-        <nav class="main-nav" role="navigation">
+        <nav id="main-nav" class="main-nav" role="navigation">
           <button class="nav-btn active">Dashboard</button>
           <button class="nav-btn">Subjects</button>
           <button class="nav-btn">Schedule</button>
@@ -114,6 +114,11 @@
       </main>
 
       <footer class="app-footer">LocalStorage • No frameworks</footer>
+    </div>
+
+    <div id="emoji-rain-container" class="emoji-rain-container" aria-hidden="false">
+      <div id="emoji-quote" class="emoji-quote" aria-live="polite">“Study smart, not just hard.” — Unknown</div>
+      <canvas id="emoji-rain"></canvas>
     </div>
 
     <script src="app.js"></script>

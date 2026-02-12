@@ -446,6 +446,7 @@ function renderChart() {
   if (!canvas) return;
   // need the 2d context to draw stuff, cant draw on just the element
   const context = canvas.getContext('2d');
+  const isDark = document.body.classList.contains('dark');
 
   // wipe the canvas clean before redrawing
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -489,7 +490,7 @@ function renderChart() {
 
   // labels for the chart
   // fillText is for strings, fillRect is for boxes
-  context.fillStyle = '#111827';
+  context.fillStyle = isDark ? '#dbeafe' : '#111827';
   context.font = '14px sans-serif';
   context.fillText('Done (' + doneCount + ')', firstX + 18, canvas.height - 8);
   context.fillText('Pending (' + pendingCount + ')', secondX + 4, canvas.height - 8);
@@ -503,6 +504,7 @@ function renderSubjectChart() {
   if (!canvas) return;
 
   const context = canvas.getContext('2d');
+  const isDark = document.body.classList.contains('dark');
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   const subjectCounts = [];
@@ -517,7 +519,7 @@ function renderSubjectChart() {
   }
 
   if (subjectCounts.length === 0) {
-    context.fillStyle = '#6b7280';
+    context.fillStyle = isDark ? '#9fb3d5' : '#6b7280';
     context.font = '15px sans-serif';
     context.fillText('No subjects yet.', 20, 40);
     return;
@@ -548,7 +550,7 @@ function renderSubjectChart() {
     context.fillStyle = '#14b8a6';
     context.fillRect(barX, barY, barWidth, barHeight);
 
-    context.fillStyle = '#0f172a';
+    context.fillStyle = isDark ? '#dbeafe' : '#0f172a';
     context.font = '12px sans-serif';
     context.fillText(String(item.count), barX + Math.round(barWidth / 2) - 4, barY - 6);
 
@@ -779,6 +781,124 @@ function refreshEverything() {
   }
 }
 
+// emoji rain effect inside a bottom container with rotating study quotes
+function setupEmojiRain() {
+  const canvas = getById('#emoji-rain');
+  const container = getById('#emoji-rain-container');
+  const quoteEl = getById('#emoji-quote');
+  if (!canvas || !container) return;
+  const ctx = canvas.getContext('2d');
+
+  const studyEmojis = ['📚', '📖', '✏️', '🎓', '📝', '🧠', '💡', '🔬', '📐', '🗂️', '⏰', '🖊️', '📎', '🏫', '🎒'];
+  const quotes = [
+    '“Study smart, not just hard.” — Unknown',
+    '“The secret of getting ahead is getting started.” — Mark Twain',
+    '“Education is the passport to the future.” — Malcolm X',
+    '“Practice like you’ve never won, perform like you’ve never lost.” — Unknown',
+    '“Small daily improvements are the key to staggering long-term results.” — Unknown',
+    '“Push yourself, because no one else is going to do it for you.” — Unknown'
+  ];
+
+  let particles = [];
+  const MAX_PARTICLES = 35;
+  let quoteIndex = Math.floor(Math.random() * quotes.length);
+  if (quoteEl) quoteEl.textContent = quotes[quoteIndex];
+
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    canvas.width = Math.max(1, Math.floor(cw * dpr));
+    canvas.height = Math.max(1, Math.floor(ch * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function spawnParticle() {
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    return {
+      x: Math.random() * cw,
+      y: -30 - Math.random() * 60,
+      size: 14 + Math.random() * 18,
+      speed: 0.6 + Math.random() * 1.2,
+      drift: (Math.random() - 0.5) * 0.6,
+      rotation: Math.random() * Math.PI * 2,
+      rotationSpeed: (Math.random() - 0.5) * 0.03,
+      emoji: studyEmojis[Math.floor(Math.random() * studyEmojis.length)],
+      opacity: 0.45 + Math.random() * 0.5
+    };
+  }
+
+  // seed a few particles so the canvas isn't empty on load
+  for (let i = 0; i < 10; i++) {
+    const p = spawnParticle();
+    p.y = Math.random() * canvas.clientHeight;
+    particles.push(p);
+  }
+
+  function animate() {
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    ctx.clearRect(0, 0, cw, ch);
+
+    // spawn new particles occasionally
+    if (particles.length < MAX_PARTICLES && Math.random() < 0.08) {
+      particles.push(spawnParticle());
+    }
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.y += p.speed;
+      p.x += p.drift;
+      p.rotation += p.rotationSpeed;
+
+      // fade out as it approaches the bottom
+      const fadeZone = ch * 0.3;
+      let alpha = p.opacity;
+      if (p.y > ch - fadeZone) {
+        alpha *= Math.max(0, (ch - p.y) / fadeZone);
+      }
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, alpha);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.font = p.size + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.emoji, 0, 0);
+      ctx.restore();
+
+      // remove if off screen
+      if (p.y > ch + 40 || p.x < -60 || p.x > cw + 60) {
+        particles.splice(i, 1);
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // rotate quotes with a fade effect
+  function rotateQuote() {
+    if (!quoteEl) return;
+    quoteEl.style.opacity = '0';
+    setTimeout(() => {
+      quoteIndex = (quoteIndex + 1) % quotes.length;
+      quoteEl.textContent = quotes[quoteIndex];
+      quoteEl.style.opacity = '1';
+    }, 600);
+  }
+  const quoteInterval = setInterval(rotateQuote, 8000);
+
+  // cleanup if necessary when page unloads
+  window.addEventListener('beforeunload', function () {
+    clearInterval(quoteInterval);
+  });
+}
+
 // app starts here when page loads
 // DOMContentLoaded is safer than window.onload because it fires sooner
 document.addEventListener('DOMContentLoaded', function () {
@@ -792,4 +912,5 @@ document.addEventListener('DOMContentLoaded', function () {
   renderTasks();
   renderDashboard();
   renderChart();
+  setupEmojiRain();
 });
