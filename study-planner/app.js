@@ -479,13 +479,17 @@ function renderChart() {
   const doneY = chartBottom - doneBarHeight;
   const pendingY = chartBottom - pendingBarHeight;
 
-  // blue bar for done tasks
-  // fillStyle sets the color for the next drawing operation
-  context.fillStyle = '#2563eb';
+  // use a vertical gradient so bars feel less flat
+  const doneGradient = context.createLinearGradient(0, doneY, 0, chartBottom);
+  doneGradient.addColorStop(0, isDark ? '#60a5fa' : '#3b82f6');
+  doneGradient.addColorStop(1, isDark ? '#1d4ed8' : '#1e40af');
+  context.fillStyle = doneGradient;
   context.fillRect(firstX, doneY, barWidth, doneBarHeight);
 
-  // orange bar for pending ones
-  context.fillStyle = '#f97316';
+  const pendingGradient = context.createLinearGradient(0, pendingY, 0, chartBottom);
+  pendingGradient.addColorStop(0, isDark ? '#fb923c' : '#f97316');
+  pendingGradient.addColorStop(1, isDark ? '#c2410c' : '#9a3412');
+  context.fillStyle = pendingGradient;
   context.fillRect(secondX, pendingY, barWidth, pendingBarHeight);
 
   // labels for the chart
@@ -547,7 +551,10 @@ function renderSubjectChart() {
     const barX = left + i * slotWidth + Math.round((slotWidth - barWidth) / 2);
     const barY = bottom - barHeight;
 
-    context.fillStyle = '#14b8a6';
+    const subjectGradient = context.createLinearGradient(0, barY, 0, bottom);
+    subjectGradient.addColorStop(0, isDark ? '#5eead4' : '#2dd4bf');
+    subjectGradient.addColorStop(1, isDark ? '#0f766e' : '#0f766e');
+    context.fillStyle = subjectGradient;
     context.fillRect(barX, barY, barWidth, barHeight);
 
     context.fillStyle = isDark ? '#dbeafe' : '#0f172a';
